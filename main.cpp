@@ -6,14 +6,13 @@
 #include <vector>
 #include <utility>
 #include <fstream>
+#include "Game.h"
 
 
 using namespace std;
 using namespace sf;
 
 const int blockSize = 150;
-
-void initmap(vector<vector<int>>& map);
 
 void initSprites(Texture& tx, vector<Sprite>& sp) {
     for (int i = 1; i <= 16; i++) {
@@ -23,53 +22,19 @@ void initSprites(Texture& tx, vector<Sprite>& sp) {
     }
 }
 
-void changeMap(vector<vector<int>>& map, int i, int j) {
-    if (map[i + 1][j] == 16) {
-        swap(map[i][j], map[i + 1][j]);
-    }
-
-    if (map[i - 1][j] == 16) {
-        swap(map[i][j], map[i - 1][j]);
-    }
-
-    if (map[i][j + 1] == 16) {
-        swap(map[i][j], map[i][j + 1]);
-    }
-
-    if (map[i][j - 1] == 16) {
-        swap(map[i][j], map[i][j - 1]);
-    }
-}
-
-bool isAssembled(const vector<vector<int>>& map) {
-    vector<vector<int>> etalon(6, vector<int>(6, -1));
-    initmap(etalon);
-    for (int i = 1; i <= 4; i++) {
-        for (int j = 1; j <= 4; j++) {
-            if (etalon[i][j] != map[i][j])return false;
-        }
-    }
-    cout << "You have won!\n";
-    return true;
-}
-
-void inputMap(vector<vector<int>>& arr) {
-    ifstream in("input.txt");
-    for (int i = 1; i <= 4; i++)
-        for (int j = 1; j <= 4; j++)
-            in >> arr[i][j];
-}
-
 int main()
 {
+    Game game;//Main game class
+    game.inputFile();
     RenderWindow form(VideoMode(750, 600), "15 game debug", Style::Close);
 
     Texture tx;
     tx.loadFromFile("15.jpg");
-    vector<vector<int>> map(6, vector<int>(6, -1));
+    
+        //vector<vector<int>> map(6, vector<int>(6, -1));//*****
     vector<Sprite> block(17);
     initSprites(tx, block);
-    inputMap(map);
+        //inputMap(map);//*****
 
     Texture txbuttonHelp; txbuttonHelp.loadFromFile("help.png");
     Texture txbuttonExitAndSave; txbuttonExitAndSave.loadFromFile("exitandsave.png");
@@ -78,7 +43,7 @@ int main()
     spbuttonExitAndSave.setTexture(txbuttonExitAndSave); spbuttonExitAndSave.setPosition(600, 300);
     
 
-    while (form.isOpen() && !isAssembled(map)) {
+    while (form.isOpen() && !game.getField().isAssembled()) {//*****
         Event event;
         while (form.pollEvent(event)) {
             if (event.type == Event::Closed) {
@@ -92,12 +57,12 @@ int main()
                 for (int i = 1; i <= 4; i++) 
                     for (int j = 1; j <= 4; j++) 
                         if ( (i-1)*blockSize < mousePos.y && (j - 1) * blockSize < mousePos.x && (i - 1) * blockSize + blockSize > mousePos.y && (j - 1) * blockSize + blockSize > mousePos.x ) {
-                            changeMap(map, i, j);
+                            game.getField().changeMap(i, j);//*****
                             break;
                         }
                 if (mousePos.x > 600 && mousePos.x < 750 && mousePos.y>0 && mousePos.y < 300) {
                     //Help Button
-
+                    cout << "Next step is: " << game.solve() << "\n";
                     //throw MSGBOX with next step
 
                 }
@@ -117,8 +82,8 @@ int main()
         form.clear(Color(207, 174, 139, 255));
         for (int i = 1; i <= 4; i++) {
             for (int j = 1; j <= 4; j++) {
-                block[map[i][j]].setPosition( (j-1)*blockSize, (i-1)*blockSize );
-                form.draw(block[map[i][j]]);
+                block[game.getField().at(i, j)].setPosition( (j-1)*blockSize, (i-1)*blockSize );//*****
+                form.draw(block[game.getField().at(i, j)]);//*****
             }
         }
         form.draw(spbuttonHelp);
@@ -126,15 +91,7 @@ int main()
 
         form.display();
     }
-
+    
     return 0;
 }
 
-
-void initmap(vector<vector<int>>& map) {
-    for (int i = 1; i <= 4; i++) {
-        for (int j = 1; j <= 4; j++) {
-            map[i][j] = (i - 1) * 4 + j;
-        }
-    }
-}
