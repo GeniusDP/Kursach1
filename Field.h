@@ -101,22 +101,55 @@ public:
         return beforeTheStepCondition.at(beforeStep.first + shiftVector.first,beforeStep.second + shiftVector.second);
     }
 
-    void changeMap(int i, int j) {
+    bool changeMap(int i, int j) {
         if (f[i + 1][j] == 16) {
             swap(f[i][j], f[i + 1][j]);
+            return true;
         }
 
         if (f[i - 1][j] == 16) {
             swap(f[i][j], f[i - 1][j]);
+            return true;
         }
 
         if (f[i][j + 1] == 16) {
             swap(f[i][j], f[i][j + 1]);
+            return true;
         }
 
         if (f[i][j - 1] == 16) {
             swap(f[i][j], f[i][j - 1]);
+            return true;
         }
+        return false;
     }
+    
 
+    bool canBeAssembled() {
+        vector<int> snake;
+        for (int i = 1; i <= 4; i++) {
+            if (i % 2) {
+                for (int j = 1; j <= 4; j++)
+                    if (f[i][j] != 16)snake.push_back(f[i][j]);
+            }
+            else {
+                for (int j = 4; j >= 1; j--)
+                    if(f[i][j]!=16)snake.push_back(f[i][j]);
+            }
+        }
+        int e = 0;
+        int N = 0;
+
+        //on which line blank is
+        for (int i = 1; i <= 4; i++)
+            for (int j = 1; j <= 4; j++)
+                if (f[i][j] == 16)e = i;
+        //how many inversions
+        for (int i = 0; i < snake.size() - 1; i++) {
+            for (int j = i + 1; j < snake.size(); j++) {
+                N += (int)(snake[j] < snake[i]);
+            }
+        }
+        return ! ((N + e) % 2);
+    }
 };
