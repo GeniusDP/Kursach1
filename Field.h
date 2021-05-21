@@ -128,13 +128,8 @@ public:
     bool canBeAssembled() {
         vector<int> snake;
         for (int i = 1; i <= 4; i++) {
-            if (i % 2) {
-                for (int j = 1; j <= 4; j++)
-                    if (f[i][j] != 16)snake.push_back(f[i][j]);
-            }
-            else {
-                for (int j = 4; j >= 1; j--)
-                    if(f[i][j]!=16)snake.push_back(f[i][j]);
+            for (int j = 1; j <= 4; j++) {
+                if (f[i][j] != 16)snake.push_back(f[i][j]);
             }
         }
         int e = 0;

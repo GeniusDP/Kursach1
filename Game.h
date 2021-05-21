@@ -4,13 +4,13 @@
 #include <fstream>
 #include <iostream>
 #include "VertoxTree.h"
-//#include "Functions.h"
 #include <queue>
 #include <set>
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
 #include "Field.h"
+#include "MsgBox.h"
 
 using namespace std;
 
@@ -32,7 +32,7 @@ class Game {
     Field m_field;
     vector<int> helpCalls;
 public:
-    void inputFile();
+    bool inputFile();
     int solve(bool);
     Field& getField() {
         return m_field;
@@ -59,25 +59,18 @@ public:
             ii += shift[curr].first;
             jj += shift[curr].second;
         }
-
-        for (int i = 1; i <= 4; i++) {
-            for (int j = 1; j <= 4; j++) {
-                cout << setw(3) << m_field.at(i, j);
-            }
-            cout << endl;
-        }
-
     }
 };
 
 
-void Game::inputFile() {
+bool Game::inputFile() {
     ifstream in("input.txt");
     for (int i = 1; i <= 4; i++)
         for (int j = 1, x; j <= 4; j++) {
             in >> x;
             m_field.at(i, j) = (x == 0) ? 16 : x;
         }
+    return m_field.canBeAssembled();
 }
 
 
